@@ -9,25 +9,16 @@ use std::time;
 
 fn main() {
     let matches = App::new("Pixiv novel downloader")
-        .version("0.1.0")
+        .version("0.1.1")
         .author("Senventise")
         .about("Download novels from pixiv.net")
         .arg(Arg::with_name("URL").required(true).index(1))
-        .arg(
-            Arg::with_name("TYPE")
-                .short("t")
-                .long("type")
-                .help("Type of the novel: single/series")
-                .default_value("single"),
-        )
         .get_matches();
     let url = matches.value_of("URL").unwrap();
-    match matches.value_of("TYPE").unwrap() {
-        "single" => {
-            download_single(url, "");
-        }
-        "series" => download_series(url),
-        _ => (),
+    if url.contains("series") {
+        download_series(url)
+    } else {
+        download_single(url, "");
     }
 }
 
@@ -83,11 +74,13 @@ fn download_series(url: &str) {
     let api_url = format!("https://www.pixiv.net/ajax/novel/series/{}", series_id);
     let api_resp = json::parse(&get_html(&api_url)).unwrap();
     let title = &api_resp["body"]["title"].to_string();
+    println!("Downloading series:《{}》", title);
     let api_url = format!(
         "https://www.pixiv.net/ajax/novel/series_content/{}?limit=30&last_order=0&order_by=asc",
         series_id
     );
     let api_resp = json::parse(&get_html(&api_url)).unwrap();
+    // Download single novels into one file
     for novel in api_resp["body"]["seriesContents"].members() {
         let novel_url = format!("https://www.pixiv.net/novel/show.php?id={}", novel["id"]);
         download_single(&novel_url, title);
