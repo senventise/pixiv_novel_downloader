@@ -70,7 +70,7 @@ fn download_single(url: &str, redirect_to: &str) {
 
 fn download_series(url: &str) {
     let series_id: Vec<&str> = url.split('/').collect();
-    let series_id = series_id.last().unwrap();
+    let series_id = series_id.last().expect("Failed to resolve url.");
     let api_url = format!("https://www.pixiv.net/ajax/novel/series/{}", series_id);
     let api_resp = json::parse(&get_html(&api_url)).unwrap();
     let title = &api_resp["body"]["title"].to_string();
