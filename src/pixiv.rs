@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use regex::Regex;
+use sanitize_filename::sanitize;
 use std::fs::{File, OpenOptions};
 use std::io::ErrorKind;
 use std::{io::Write, path::Path};
@@ -29,30 +30,23 @@ impl Novel {
     }
 
     pub fn save(&self) {
-        let filename = self.get_filename();
+        let filename = sanitize(self.get_filename());
         let path = Path::new(&filename);
         println!("[Download]: {}", &self.title);
-        match OpenOptions::new().write(true).create_new(true).open(path) {
-            Ok(mut file) => {
-                write!(
-                    &file,
-                    "pid:{}\ntitle:{}\nauthor:{}[{}]\n==================\n",
-                    self.pid, self.title, self.author, self.uid
-                )
-                .expect("Failed to write file");
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path)
+            .expect("Failed to create file.");
+        write!(
+            &file,
+            "pid:{}\ntitle:{}\nauthor:{}[{}]\n==================\n",
+            self.pid, self.title, self.author, self.uid
+        )
+        .expect("Failed to write file");
 
-                file.write_all(self.content.as_ref())
-                    .expect("Failed to write.");
-            }
-            Err(error) => match error.kind() {
-                ErrorKind::AlreadyExists => {
-                    println!("Already exists, skipped.");
-                }
-                _ => {
-                    panic!("Failed to create file.");
-                }
-            },
-        };
+        file.write_all(self.content.as_ref())
+            .expect("Failed to write.");
     }
 
     pub fn post_process(content: &str) -> String {
@@ -80,7 +74,7 @@ impl Series {
             .write(true)
             .append(true)
             .create(true)
-            .open(format!("{}-{}.txt", title, author))
+            .open(sanitize(format!("{}-{}.txt", title, author)))
             .expect("Failed to create file.");
         write!(
             &file,
