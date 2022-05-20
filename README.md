@@ -1,5 +1,5 @@
 # Pixown
-pixown =  **pix**iv novel d**own**load
+pixown =  **pix**iv novel d**own**load  
 Download novel from pixiv.
 
 ## Features
