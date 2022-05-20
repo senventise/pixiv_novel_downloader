@@ -119,12 +119,13 @@ fn download_user_bookmarks(uid: &str) {
                 novel_json["id"]
             )));
             iterated += 1;
+            sleep(time::Duration::from_secs(3))
         }
         offset += 24;
         if iterated == api_resp["body"]["total"].as_u8().unwrap() {
             break;
         }
-        sleep(time::Duration::from_secs(3))
+        sleep(time::Duration::from_secs(5));
     }
 }
 
