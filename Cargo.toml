@@ -1,16 +1,17 @@
 [package]
-name = "pixiv_novel_download"
-version = "0.1.1"
+name = "pixown"
+version = "0.2.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 reqwest = {version = "0.11.6", features = ["blocking","rustls-tls"]}
-scraper = "0.12.0"
 json = "0.12.4"
 clap = "2.33.3"
 openssl = { version = "0.10.38", features = ["vendored"] }
+regex = "1.5.5"
+lazy_static = "1.4.0"
 
 [profile.release]
 strip = true
