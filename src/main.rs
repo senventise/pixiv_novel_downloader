@@ -7,6 +7,7 @@ use clap::{App, Arg};
 use regex::Regex;
 use reqwest::header::{HeaderMap, HeaderValue, COOKIE, USER_AGENT};
 use std::env;
+use std::path::Path;
 use std::thread::sleep;
 use std::time;
 
@@ -114,10 +115,16 @@ fn download_user_bookmarks(uid: &str) {
                 println!("[DELETED]: {}", novel_json["id"]);
                 continue;
             }
-            download_single(&String::from(format!(
+            let filename = format!("{}-{}.txt", novel_json["id"], novel_json["userName"]);
+            let path = Path::new(&filename);
+            if path.exists() {
+                println!("{} exists, skipped.", filename);
+                continue;
+            }
+            download_single(&format!(
                 "https://www.pixiv.net/novel/show.php?id={}",
                 novel_json["id"]
-            )));
+            ));
             iterated += 1;
             sleep(time::Duration::from_secs(3))
         }
