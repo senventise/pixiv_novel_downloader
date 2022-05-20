@@ -112,6 +112,7 @@ fn download_user_bookmarks(uid: &str) {
         );
         let api_resp = json::parse(&get_response(&api_url, true)).unwrap();
         for novel_json in api_resp["body"]["works"].members() {
+            iterated += 1;
             if novel_json["isMasked"].as_bool().unwrap() {
                 println!("[DELETED]: {}", novel_json["id"]);
                 continue;
@@ -129,11 +130,10 @@ fn download_user_bookmarks(uid: &str) {
                 "https://www.pixiv.net/novel/show.php?id={}",
                 novel_json["id"]
             ));
-            iterated += 1;
             sleep(time::Duration::from_secs(3))
         }
         offset += 24;
-        if iterated == api_resp["body"]["total"].as_u8().unwrap() {
+        if iterated >= api_resp["body"]["total"].as_u8().unwrap() {
             break;
         }
         sleep(time::Duration::from_secs(5));
